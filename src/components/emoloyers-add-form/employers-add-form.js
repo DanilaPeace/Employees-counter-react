@@ -18,6 +18,12 @@ class EmployeesAddForm extends Component{
 
     onSubmit = (event) => {
         event.preventDefault();
+
+        const MIN_LENGTH_OF_EMPLOYEE_NAME = 3;
+        if (this.state.name.length <= MIN_LENGTH_OF_EMPLOYEE_NAME) {
+            alert("Name of employee must be more than 3 symbols.");
+            return
+        }
         
         this.props.onAdd(this.state.name, this.state.salary)
 
@@ -29,6 +35,7 @@ class EmployeesAddForm extends Component{
 
     render() {
         const {name, salary} = this.state;
+
 
         return (
             <div className="app-add-form">
