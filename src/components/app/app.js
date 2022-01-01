@@ -1,6 +1,6 @@
 import { Component } from 'react';
 
-import { SearchPanel } from '../search-panel/search-panel';
+import SearchPanel from '../search-panel/search-panel';
 import AppInfo from '../app-info/app-info';
 import AppFilter from '../app-filter/app-filter';
 import EmployeesList from '../employees-list/employees-list';
@@ -17,8 +17,9 @@ class App extends Component {
                 {name: 'Sam V.', bonus: false, salary: 800, rise: true, id: 1},
                 {name: 'Din W.', bonus: false, salary: 3000, rise: false, id: 2},
                 {name: 'Alex H.', bonus: false, salary: 500, rise: false, id: 3}
-            ]
-        }
+            ], 
+            searchString: '',
+        };
     }
 
     deleteEmployee = (id) => {
@@ -59,22 +60,42 @@ class App extends Component {
         }))
     }
 
-    bonusCounter = () => this.state.employeesData.filter(employee => employee.bonus).length
+    bonusCounter = () => this.state.employeesData.filter(employee => employee.bonus).length;
+
+    searchEmployees = (employeesArr) => {
+        const {searchString} = this.state;
+        if (searchString === 0) return employeesArr;
+
+        return (employeesArr.filter(employee => {
+            return employee.name.indexOf(searchString) > -1;
+        }))
+    };
+
+    onUpdateSearch = (enteredSearchStr) => {
+        this.setState({
+            searchString: enteredSearchStr
+        })
+    };
 
     render() {
-        const {employeesData} = this.state;
+        const {employeesData, searchString} = this.state;
+        const visibleData = this.searchEmployees(employeesData, searchString);
 
         return (
         <div className='app'>
                 <AppInfo 
-                    totalEmployees={this.state.employeesData.length}
+                    totalEmployees={employeesData.length}
                     bonusCount={this.bonusCounter()}/>
+                
                 <div className='search-panel'>
-                    <SearchPanel />
-                    <AppFilter />
+                    <SearchPanel onUpdateSearch={this.onUpdateSearch}/>
+                    <AppFilter 
+                        onAllEmpFilter={this.onAllEmpFilter}
+                        onBonusFilter={this.onBonusFilter}/>
                 </div>
+                
                 <EmployeesList 
-                    data={employeesData}
+                    data={visibleData}
                     onDelete={this.deleteEmployee}
                     onToggleProp={this.onToggleProp}/>
                 <EmployeesAddForm 

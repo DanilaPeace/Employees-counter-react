@@ -1,12 +1,36 @@
+import {
+    Component
+} from 'react';
 import './search-panel.css'
 
-function SearchPanel() {
-    return (
-        <input 
-            type="text"
-            placeholder="Type here"
-            className="fotm-control search-input" />
-    )
+class SearchPanel extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            searchStr: ''
+        }
+    }
+
+    onSearchStrChange =(event) => {
+        const searchStr = event.target.value; 
+        this.setState({
+            searchStr
+        })
+
+        this.props.onUpdateSearch(searchStr);
+    }
+
+    render() {
+        const {searchStr} = this.state;
+
+        return ( 
+            <input type = "text"
+                placeholder = "Type here"
+                className = "fotm-control search-input"
+                value={searchStr}
+                onChange={this.onSearchStrChange} />
+        )
+    }
 }
 
-export {SearchPanel};
+export default SearchPanel;
