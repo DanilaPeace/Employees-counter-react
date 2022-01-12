@@ -19,6 +19,7 @@ class App extends Component {
                 {name: 'Alex H.', bonus: false, salary: 500, rise: false, id: 3}
             ], 
             searchString: '',
+            filter: 'all'
         };
     }
 
@@ -71,15 +72,48 @@ class App extends Component {
         }))
     };
 
+    filterEmployees = (employeesArr, filter) => {
+        const MIN_SALARY_VALUE = 1000;
+        switch (filter) {
+            case 'bonus': 
+                return employeesArr.filter(employee => employee.bonus);
+            case 'moreThen1000': 
+                return employeesArr.filter(employee => employee.salary >= MIN_SALARY_VALUE);
+            default: 
+                return employeesArr
+        }
+    }
+
     onUpdateSearch = (enteredSearchStr) => {
         this.setState({
             searchString: enteredSearchStr
         })
     };
 
+    onFilterSelect = (filter) => {
+        this.setState({
+            filter
+        });
+    };
+
+    salaryChange = (id, newSalary) => {
+        this.setState(({employeesData}) => ({
+            employeesData: employeesData.map(employee => {
+                if (employee.id === id) {
+                    return {...employee, salary: newSalary}
+                }
+
+                return employee;            
+            })
+        }))
+    }
+
     render() {
-        const {employeesData, searchString} = this.state;
-        const visibleData = this.searchEmployees(employeesData, searchString);
+        const {employeesData, searchString, filter} = this.state;
+        const visibleData = this.filterEmployees(
+            this.searchEmployees(employeesData, searchString),
+            filter
+        );
 
         return (
         <div className='app'>
@@ -90,14 +124,15 @@ class App extends Component {
                 <div className='search-panel'>
                     <SearchPanel onUpdateSearch={this.onUpdateSearch}/>
                     <AppFilter 
-                        onAllEmpFilter={this.onAllEmpFilter}
-                        onBonusFilter={this.onBonusFilter}/>
+                       onFilterSelect={this.onFilterSelect}
+                       filter={filter}/>
                 </div>
                 
                 <EmployeesList 
                     data={visibleData}
                     onDelete={this.deleteEmployee}
-                    onToggleProp={this.onToggleProp}/>
+                    onToggleProp={this.onToggleProp}
+                    salaryChange={this.salaryChange}/>
                 <EmployeesAddForm 
                     onAdd={this.addEmployee}/>
             </div>
